@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.hasData) {
-              return HomePage();  
+              return HomePage(signedIN: snapshot.data,);  
             } else {
               return LoginPage(); 
             }

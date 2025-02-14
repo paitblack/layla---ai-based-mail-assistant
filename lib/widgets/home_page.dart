@@ -8,13 +8,64 @@ import 'package:layla/widgets/alarm.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:layla/widgets/login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
+import 'package:googleapis/gmail/v1.dart';
 
-final GoogleSignIn _googleSignIn = GoogleSignIn();
-final mail = FirebaseAuth.instance.currentUser?.email; 
+final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: [
+  'https://www.googleapis.com/auth/gmail.readonly',
+    'https://www.googleapis.com/auth/gmail.modify', 
+    'https://www.googleapis.com/auth/gmail.labels', 
+    'https://www.googleapis.com/auth/gmail.compose',
+]);
+final mail = FirebaseAuth.instance.currentUser?.email;
+final bool isSignedIn = FirebaseAuth.instance.currentUser != null;
+
+class GoogleAuthClient extends http.BaseClient {
+  final Map<String, String> _headers;
+  final http.Client _client = http.Client();
+
+  GoogleAuthClient(this._headers);
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    return _client.send(request..headers.addAll(_headers));
+  }
+}
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-  
+  final User? signedIN;
+  const HomePage({super.key, required this.signedIN});
+
+  Future<GmailApi?> gmailAPIaccess(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signInSilently();
+      
+      if (googleUser == null) {
+        print("Google hesabina giris yapilmamis.");
+        return null;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final String? accessToken = googleAuth.accessToken;
+
+      if (accessToken == null) {
+        print("Google Access Token alinamadi.");
+        return null;
+      }
+
+      final authHeaders = {'Authorization': 'Bearer $accessToken'};
+      final authenticateClient = GoogleAuthClient(authHeaders);
+
+      final GmailApi gmailApi = GmailApi(authenticateClient);
+      print("Gmail API basariyla olusturuldu!");
+
+      return gmailApi;
+    } catch (e) {
+      print("Gmail API erisim hatasi: $e");
+      return null;
+    }
+  }
+
 
 static const IconData notifications = IconData(0xe44f, fontFamily: 'MaterialIcons'); 
  @override
