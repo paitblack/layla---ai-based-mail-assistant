@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "309206159732",
+    "project_id": "layla-da76e",
+    "storage_bucket": "layla-da76e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:309206159732:android:b8a776c33d346def8a5c21",
+        "android_client_info": {
+          "package_name": "com.example.layla"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1PAl4jpsZ9wiuBs4SR245GYlD5Bynn-o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
