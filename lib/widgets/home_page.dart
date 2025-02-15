@@ -396,7 +396,7 @@ static const IconData notifications = IconData(0xe44f, fontFamily: 'MaterialIcon
                             minimumSize: WidgetStatePropertyAll(Size(400, 400)),
                           ),
                           child: Text(
-                            'Search \n a mail', 
+                            'Search \n mails', 
                             style: TextStyle(
                             color: Colors.white,
                             fontSize: 32,
