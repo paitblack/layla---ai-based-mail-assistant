@@ -15,7 +15,8 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: [
   'https://www.googleapis.com/auth/gmail.readonly',
     'https://www.googleapis.com/auth/gmail.modify', 
     'https://www.googleapis.com/auth/gmail.labels', 
-    'https://www.googleapis.com/auth/gmail.compose',
+    'https://www.googleapis.com/auth/gmail.compose'
+    'https://www.googleapis.com/auth/gmail.send',
 ]);
 final mail = FirebaseAuth.instance.currentUser?.email;
 final bool isSignedIn = FirebaseAuth.instance.currentUser != null;
@@ -417,7 +418,7 @@ static const IconData notifications = IconData(0xe44f, fontFamily: 'MaterialIcon
                             minimumSize: WidgetStatePropertyAll(Size(400, 400)),
                           ),
                           child: Text(
-                            'Chat with \n assistant', 
+                            'Chat with \n    Layla', 
                             style: TextStyle(
                             color: Colors.white,
                             fontSize: 32,
