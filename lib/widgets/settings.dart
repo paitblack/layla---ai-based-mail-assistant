@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:layla/theme/colors.dart';
 import 'package:layla/widgets/change_alarm.dart';
 
 class Settingss extends StatelessWidget {
@@ -8,231 +7,181 @@ class Settingss extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.95, 
-          height: MediaQuery.of(context).size.height * 0.95, 
-          decoration: BoxDecoration(
-            color: Colors.white, 
-            borderRadius: BorderRadius.circular(30), 
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26, 
-                blurRadius: 10,
-                spreadRadius: 2,
-              ),
-            ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/bg.png"),
+            fit: BoxFit.cover,
           ),
+        ),
+        child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start, 
             children: [
-              SizedBox(height: 20),
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.90, 
-                  height: MediaQuery.of(context).size.height * 0.08,
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26, 
-                        blurRadius: 10,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(width: 0),  
-                      Image.asset(
-                        'images/layla.png',
-                        width: 150,
-                        height: 150,
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            "Settings",
-                            textAlign: TextAlign.center, 
-                            style: TextStyle(
-                              color: Colors.white, 
-                              fontSize: 36, 
-                              fontWeight: FontWeight.bold, 
-                            ),
-                          ),
-                        ),
-                      ),
-                      RawMaterialButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        shape: CircleBorder(),
-                        fillColor: Colors.white,
-                        padding: EdgeInsets.all(10),
-                        child: Icon(
-                          Icons.home_filled,
-                          color: AppColors.background,
-                          size: 75,
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                    ],
-                  ),
+              AppBar(
+                backgroundColor: Colors.white24, 
+                elevation: 4,
+                title: Text(
+                  "Settings",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: Colors.black), 
                 ),
               ),
-              SizedBox(height: 100,),
-              Column(
+              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+              Expanded(child: Column(
                 children: [
-                  ElevatedButton(
-                  onPressed:(){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => ChangeAlarm()));
+                  ElevatedButton(onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ChangeAlarm()));
                   },
                   style: ButtonStyle(
                     padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                    backgroundColor: WidgetStatePropertyAll(AppColors.background),
+                    backgroundColor: WidgetStatePropertyAll(Colors.white),
                     shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                    minimumSize: WidgetStatePropertyAll(Size(975,100))
+                    minimumSize: WidgetStatePropertyAll(Size(MediaQuery.of(context).size.width * 0.9,MediaQuery.of(context).size.height * 0.08))
                   ) , 
                   child: Text(
                     'Change Alarm Sound',                   
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
+                      color: Colors.black,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold
                     ),
-                  ), ),
-                  SizedBox(height: 50,),
+                  ), 
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Container(
-                  width: 975, 
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
+                    width: MediaQuery.of(context).size.width * 0.9 ,
+                    height: MediaQuery.of(context).size.height * 0.08,
+                    decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black26, 
-                        blurRadius: 10,
-                        spreadRadius: 2,
+                        blurRadius: 3,
+                        spreadRadius: 0,
+                        blurStyle: BlurStyle.solid
                       ),
                     ],
                   ),
                   child: Row(
                     children: [
-                      SizedBox(width: 30,),
+                      SizedBox(width:MediaQuery.of(context).size.width * 0.05 ,),
                       Text(
                         'Alarm',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
+                          color: Colors.black,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold
                         ),
                       ),
-                      SizedBox(width: 775,),
+                      
                       Switch(
                       
-                      value: true,      // bool deger eklenecek ve onChanged tanimlanacak.
+                      value: true, 
                       onChanged: (bool value) {
                         
                       },
                       activeColor: Colors.white, 
-                      activeTrackColor: AppColors.greeny, 
+                      activeTrackColor: Colors.grey.withOpacity(0.5), 
                       inactiveThumbColor: Colors.grey, 
                       inactiveTrackColor: Colors.black26, 
                         ),
                     ],
                   ),
                   ),
-                  SizedBox(height: 50,),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Container(
-                  width: 975, 
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
+                    width: MediaQuery.of(context).size.width * 0.9 ,
+                    height: MediaQuery.of(context).size.height * 0.08,
+                    decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black26, 
-                        blurRadius: 10,
-                        spreadRadius: 2,
+                        blurRadius: 3,
+                        spreadRadius: 0,
+                        blurStyle: BlurStyle.solid
                       ),
                     ],
                   ),
                   child: Row(
                     children: [
-                      SizedBox(width: 30,),
+                      SizedBox(width:MediaQuery.of(context).size.width * 0.05 ,),
                       Text(
-                        'Buzz Vibration',
+                        'Alarm',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
+                          color: Colors.black,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold
                         ),
                       ),
-                      SizedBox(width: 650,),
+                      
                       Switch(
                       
-                      value: true,      // bool deger eklenecek ve onChanged tanimlanacak.
+                      value: true, 
                       onChanged: (bool value) {
                         
                       },
                       activeColor: Colors.white, 
-                      activeTrackColor: AppColors.greeny, 
+                      activeTrackColor: Colors.grey.withOpacity(0.5), 
                       inactiveThumbColor: Colors.grey, 
                       inactiveTrackColor: Colors.black26, 
                         ),
                     ],
                   ),
                   ),
-                  SizedBox(height: 50,),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Container(
-                    width: 975, 
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
+                    width: MediaQuery.of(context).size.width * 0.9 ,
+                    height: MediaQuery.of(context).size.height * 0.08,
+                    decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black26, 
-                        blurRadius: 10,
-                        spreadRadius: 2,
+                        blurRadius: 3,
+                        spreadRadius: 0,
+                        blurStyle: BlurStyle.solid
                       ),
                     ],
                   ),
                   child: Row(
                     children: [
-                      SizedBox(width: 30,),
+                      SizedBox(width:MediaQuery.of(context).size.width * 0.05 ,),
                       Text(
-                        'Notifications',
+                        'Alarm',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
+                          color: Colors.black,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold
                         ),
                       ),
-                      SizedBox(width: 674,),
+                      
                       Switch(
                       
-                      value: true,      // bool deger eklenecek ve onChanged tanimlanacak.
+                      value: true, 
                       onChanged: (bool value) {
                         
                       },
                       activeColor: Colors.white, 
-                      activeTrackColor: AppColors.greeny, 
+                      activeTrackColor: Colors.grey.withOpacity(0.5), 
                       inactiveThumbColor: Colors.grey, 
                       inactiveTrackColor: Colors.black26, 
                         ),
                     ],
                   ),
-                  ),
+                  )
                 ],
-              )
-          ]
+              ),
+              ),
+              
+            ],
+          ),
         ),
       ),
-      ),   
     );
   }
 }
+
