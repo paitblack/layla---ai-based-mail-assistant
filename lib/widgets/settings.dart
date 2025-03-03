@@ -10,7 +10,7 @@ class Settingss extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/bg.png"),
+            image: AssetImage("images/bg.png"),
             fit: BoxFit.cover,
           ),
         ),
