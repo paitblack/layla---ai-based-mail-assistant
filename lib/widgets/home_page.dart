@@ -72,412 +72,258 @@ static const IconData notifications = IconData(0xe44f, fontFamily: 'MaterialIcon
  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.95, 
-          height: MediaQuery.of(context).size.height * 0.95, 
-          decoration: BoxDecoration(
-            color: Colors.white, 
-            borderRadius: BorderRadius.circular(30), 
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26, 
-                blurRadius: 10,
-                spreadRadius: 2,
-              ),
-            ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("images/bg.png"),
+            fit: BoxFit.cover,
           ),
+        ),
+        child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start, 
             children: [
-              SizedBox(height: 20),
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.90, 
-                  height: MediaQuery.of(context).size.height * 0.08,
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26, 
-                        blurRadius: 10,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(width: 0),  
-                      Image.asset(
-                        'images/layla.png',
-                        width: 150,
-                        height: 150,
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            "Home Page",
-                            textAlign: TextAlign.center, 
-                            style: TextStyle(
-                              color: Colors.white, 
-                              fontSize: 36, 
-                              fontWeight: FontWeight.bold, 
-                            ),
-                          ),
-                        ),
-                      ),
-                      RawMaterialButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Notifications'),
-                                content: Container(
-                                  width: MediaQuery.of(context).size.width * 0.8,
-                                  height: 200, 
-                                  /*child: ListView(
-                                    children: notifications.isEmpty
-                                        ? [
-                                            Center(child: Text('There is no notification')),
-                                          ]
-                                        : [
-                                            ...notifications.map((notification) {
-                                              return InkWell(
-                                                onTap: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: Container(
-                                                  height: 50,
-                                                  color: Colors.amber[100],
-                                                  child: Center(child: Text(notification)),
-                                                ),
-                                              );
-                                            }).toList(),
-                                            Divider(),
-                                            TextButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  notifications.clear();
-                                                });
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Center(
-                                                child: Text(
-                                                  'Clear',
-                                                  style: TextStyle(color: Colors.red),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                  ),*/
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();  // Dialogu kapat
-                                    },
-                                    child: Text('Close'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        
-                        },
-                        shape: CircleBorder(),
-                        fillColor: Colors.white,
-                        padding: EdgeInsets.all(10),
-                        child: Icon(
-                          Icons.notifications,
-                          color: AppColors.background,
-                          size: 75,
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                    ],
-                  ),
+              AppBar(
+                backgroundColor: Colors.white24, 
+                elevation: 4,
+                title: Text(
+                  "Home Page",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: Colors.black), 
                 ),
-              ),
-              
-              SizedBox(height: 100), 
-
-              Align(
-                alignment: Alignment.center,
-                child: Container( ///container right???? check
-                  width: MediaQuery.of(context).size.width * 0.90, 
-                  height: MediaQuery.of(context).size.height * 0.25,
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26, 
-                        blurRadius: 10,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.85, 
-                      height: MediaQuery.of(context).size.height * 0.225,  
-                      decoration: BoxDecoration(
-                        color: Colors.white,  
-                        borderRadius: BorderRadius.circular(20),  
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26, 
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      
-                      child: Column(
-                        children: [
-                          SizedBox(height: 20),
-                          Row(
-                            children: [
-                              SizedBox(width: 20),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * 0.15, 
-                                  height: MediaQuery.of(context).size.height * 0.08,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.background,
-                                    borderRadius: BorderRadius.circular(30),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black26, 
-                                        blurRadius: 10,
-                                        spreadRadius: 2,
-                                      ),
-                                    ]
-                                  ),
-                                  child: Image.asset(
-                                    'images/gmail.png'
-                                  ),
-                                ),
+                actions: <Widget>[
+                  RawMaterialButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Notifications'),
+                            content: Container(
+                              width: MediaQuery.of(context).size.width * 0.8,
+                              height: 200,
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Close'),
                               ),
-                              SizedBox(width: 65),
-                              Align(
-                                
-                                alignment: Alignment.center,
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * 0.60, 
-                                  height: MediaQuery.of(context).size.height * 0.08,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.background,
-                                    borderRadius: BorderRadius.circular(30),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black26, 
-                                        blurRadius: 10,
-                                        spreadRadius: 2,
-                                      ),
-                                    ],
-                                  ),
-                                  
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: Container(
-                                    
-                                    width: MediaQuery.of(context).size.width * 0.575, 
-                                    height: MediaQuery.of(context).size.height * 0.07,  
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,  
-                                      borderRadius: BorderRadius.circular(30),  
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black26, 
-                                          blurRadius: 10,
-                                          spreadRadius: 2,
-                                        ),
-                                      ],
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                    mail!,
-                                    textAlign: TextAlign.center, 
-                                    style: TextStyle(
-                                      color: Colors.black, 
-                                      fontSize: 36, 
-                                      fontWeight: FontWeight.bold, 
-                                    ),
-                                    ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              
-                              ),
-                          
                             ],
-                          ),
-                          SizedBox(height: 40),
-                          ElevatedButton(
-                          onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Settingss()));
-                          },                                         
-                          style: ButtonStyle(
-                            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 20,horizontal: 200)),
-                            backgroundColor: WidgetStatePropertyAll(AppColors.background),
-                            shape : WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))
-                          ),
-                          child: Text(
-                            'Settings',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          ),
-                          SizedBox(height: 40),
-                          ElevatedButton(
-                          onPressed: () async {
-                            try {
-                              
-                              await _googleSignIn.signOut();
-
-                              
-                              await FirebaseAuth.instance.signOut();
-
-                              
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => LoginPage()),
-                              );
-                            } catch (e) {
-                              print('Error during sign out: $e');
-                            }
-                          },                                       
-                          style: ButtonStyle(
-                            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 20,horizontal: 203)),
-                            backgroundColor: WidgetStatePropertyAll(AppColors.background),
-                            shape : WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))
-                          ),
-                          child: Text(
-                            'Log  out',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          ),
-                        ],
-                      ),
+                          );
+                        },
+                      );
+                    },
+                    child: Icon(
+                      Icons.notifications,
+                      color: Colors.black, 
                     ),
                   ),
-                ),
+                ],
               ),
-              SizedBox(height: 100),
-              Align(
-                alignment: Alignment.center,
-                child: Column(
+              SizedBox(height: MediaQuery.of(context).size.height*0.03,),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.90, 
+                height: MediaQuery.of(context).size.height * 0.30,
+                decoration: BoxDecoration(
+                    color:  Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26, 
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: Column(
                     children: [
+                      SizedBox(height:MediaQuery.of(context).size.height * 0.02 ,),
                       Row(
                         children: [
-                          SizedBox(width: 60),
-                          ElevatedButton(
+                          SizedBox(width:MediaQuery.of(context).size.height * 0.02 ,),
+                          Image.asset("images/gmail.png",width: MediaQuery.of(context).size.height * 0.05,height:MediaQuery.of(context).size.height * 0.05 ,),
+                          SizedBox(width:MediaQuery.of(context).size.height * 0.02 ,),
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.65,
+                            height: MediaQuery.of(context).size.height * 0.05,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                )
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                mail!,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,  
+                                ),
+                                softWrap: true,  
+                                overflow: TextOverflow.ellipsis, 
+                              ),
+                            ),
+                          )
+
+                        ],
+                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                onPressed: (){  
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => Settingss()));
+                                },
+                                style: ButtonStyle(
+                                padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.width * 0.02 ,horizontal: MediaQuery.of(context).size.height * 0.05)),
+                                backgroundColor: WidgetStatePropertyAll(const Color.fromARGB(248, 255, 234, 241)),
+                                shape : WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))
+                              ),
+                                child: Text("Settings",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                ),)
+                                ),
+                              SizedBox(height: MediaQuery.of(context).size.height * 0.015,),
+                              ElevatedButton(
+                                onPressed: ()async {
+                                try {
+                                  
+                                  await _googleSignIn.signOut();
+
+                                  
+                                  await FirebaseAuth.instance.signOut();
+
+                                  
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => LoginPage()),
+                                  );
+                                } catch (e) {
+                                  print('Error during sign out: $e');
+                                }
+                              },
+                                style: ButtonStyle(
+                                padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.width * 0.02 ,horizontal: MediaQuery.of(context).size.height * 0.05)),
+                                backgroundColor: WidgetStatePropertyAll(const Color.fromARGB(255, 253, 243, 215)),
+                                shape : WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))
+                              ),
+                                child:Text("Log out",
+                                style: TextStyle(
+                                  color: Colors.black
+                                ),)
+                                ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
                           onPressed: (){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => SearchMail()));
                           },
                           style: ButtonStyle(
                             padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                            backgroundColor: WidgetStatePropertyAll(AppColors.bluey),
+                            backgroundColor: WidgetStatePropertyAll(Colors.white),
                             shape : WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                            minimumSize: WidgetStatePropertyAll(Size(400, 400)),
+                            minimumSize: WidgetStatePropertyAll(Size(MediaQuery.of(context).size.width * 0.35,MediaQuery.of(context).size.height * 0.175),),
                           ),
                           child: Text(
                             'Search \n mails', 
                             style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold
+                            color: AppColors.redy,
+                            fontSize: MediaQuery.of(context).size.width * 0.04,
                           ),
                           ),
                           ),
-                          
-                          SizedBox(width: 100),
-                          ElevatedButton(
+                      SizedBox(width: MediaQuery.of(context).size.width * 0.15,),
+                      ElevatedButton(
                           onPressed: (){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => Chat()));
                           },
                           style: ButtonStyle(
                             padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                            backgroundColor: WidgetStatePropertyAll(AppColors.greeny),
+                            backgroundColor: WidgetStatePropertyAll(Colors.white),
                             shape : WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                            minimumSize: WidgetStatePropertyAll(Size(400, 400)),
+                            minimumSize: WidgetStatePropertyAll(Size(MediaQuery.of(context).size.width * 0.35,MediaQuery.of(context).size.height * 0.175),),
                           ),
                           child: Text(
-                            'Chat with \n    Layla', 
+                            'Chat with \n   Layla', 
                             style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold
+                            color: AppColors.greeny,
+                            fontSize: MediaQuery.of(context).size.width * 0.04,
                           ),
                           ),
                           ),
-                        ],
-                      ),
-                      SizedBox(height:100),
-                      Row(
-                        children: [
-                          SizedBox(width: 60),
-                          ElevatedButton(
+
+                    ],
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.075,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
                           onPressed: (){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => Classify()));
                           },
                           style: ButtonStyle(
                             padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                            backgroundColor: WidgetStatePropertyAll(AppColors.redy),
+                            backgroundColor: WidgetStatePropertyAll(Colors.white),
                             shape : WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                            minimumSize: WidgetStatePropertyAll(Size(400, 400)),
+                            minimumSize: WidgetStatePropertyAll(Size(MediaQuery.of(context).size.width * 0.35,MediaQuery.of(context).size.height * 0.175),),
                           ),
                           child: Text(
                             'Classify', 
                             style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold
+                            color: AppColors.yellowy,
+                            fontSize: MediaQuery.of(context).size.width * 0.04,
                           ),
                           ),
                           ),
-                          
-                          SizedBox(width: 100),
-                          ElevatedButton(
+                      SizedBox(width: MediaQuery.of(context).size.width * 0.15,),
+                      ElevatedButton(
                           onPressed: (){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => Alarm()));
                           },
                           style: ButtonStyle(
                             padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                            backgroundColor: WidgetStatePropertyAll(AppColors.yellowy),
+                            backgroundColor: WidgetStatePropertyAll(Colors.white),
                             shape : WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                            minimumSize: WidgetStatePropertyAll(Size(400, 400)),
+                            minimumSize: WidgetStatePropertyAll(Size(MediaQuery.of(context).size.width * 0.35,MediaQuery.of(context).size.height * 0.175),),
                           ),
                           child: Text(
                             'Set an alarm', 
                             style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold
+                            color: AppColors.bluey,
+                            fontSize: MediaQuery.of(context).size.width * 0.04,
                           ),
                           ),
                           ),
-                        ],
-                      ),
+
                     ],
                   ),
-                  
-                ),     
+                ],
+              ),
             ],
           ),
         ),

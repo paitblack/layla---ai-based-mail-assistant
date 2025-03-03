@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/gmail/v1.dart';
-import 'package:layla/theme/colors.dart';
 import 'package:layla/widgets/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SearchMail extends StatefulWidget {
-  const SearchMail({super.key});
-
   @override
   _SearchMailState createState() => _SearchMailState();
 }
@@ -17,8 +14,7 @@ class _SearchMailState extends State<SearchMail> {
   String emailContent = '';
   GmailApi? _gmailApi;
   String senderName = "";
-  int index = 1;
-  bool _isLoading = false; 
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -27,19 +23,16 @@ class _SearchMailState extends State<SearchMail> {
   }
 
   Future<void> _initGmailApi() async {
-    _gmailApi = await HomePage(signedIN: FirebaseAuth.instance.currentUser)
-        .gmailAPIaccess(context);
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      _gmailApi = await HomePage(signedIN: user).gmailAPIaccess(context);
+    }
   }
 
   Future<void> _searchEmails() async {
-    if (_gmailApi == null) {
-      print("1.");
-      return;
-    }
+    if (_gmailApi == null) return;
 
-    setState(() {
-      _isLoading = true; 
-    });
+    setState(() => _isLoading = true);
 
     try {
       var query = _searchController.text;
@@ -50,20 +43,12 @@ class _SearchMailState extends State<SearchMail> {
 
         for (var msg in response.messages!) {
           var fullMessage = await _gmailApi!.users.messages.get('me', msg.id!);
+          String? subject, from;
           
-          String? subject;
-          String? from;
-
-          if (fullMessage.payload != null && fullMessage.payload!.headers != null) {
-            for (var header in fullMessage.payload!.headers!) {
-              if (header.name == "Subject") {
-                subject = header.value;
-              }
-              if (header.name == "From") {
-                from = header.value;
-              }
-            }
-          }
+          fullMessage.payload?.headers?.forEach((header) {
+            if (header.name == "Subject") subject = header.value;
+            if (header.name == "From") from = header.value;
+          });
 
           msg.payload = MessagePart(headers: [
             MessagePartHeader(name: "Subject", value: subject ?? "No Subject"),
@@ -73,245 +58,99 @@ class _SearchMailState extends State<SearchMail> {
           fetchedEmails.add(msg);
         }
 
-        setState(() {
-          _emails = fetchedEmails;
-        });
+        setState(() => _emails = fetchedEmails);
       } else {
-        setState(() {
-          _emails = [];
-          emailContent = "2.";
-        });
+        setState(() => _emails = []);
       }
     } catch (e) {
-      print("3: $e");
+      print("Error: $e");
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _getEmailContent(String messageId) async {
-    if (_gmailApi == null) {
-      print("4.");
-      return;
-    }
-
-    try {
-      var message = await _gmailApi!.users.messages.get('me', messageId);
-      String? subject;
-      String? from;
-
-      if (message.payload != null && message.payload!.headers != null) {
-        for (var header in message.payload!.headers!) {
-          if (header.name == "Subject") {
-            subject = header.value;
-          }
-          if (header.name == "From") {
-            from = header.value;
-          }
-        }
-      }
-
-      setState(() {
-        emailContent = subject ?? '5';
-        senderName = from ?? '6';
-      });
-    } catch (e) {
-      print("7: $e");
+      setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          Center(
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.95,
-              height: MediaQuery.of(context).size.height * 0.95,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2),
-                ],
-              ),
-              child: Column(
-                children: [
-                  SizedBox(height: 20),
-                  _buildHeader(context),
-                  SizedBox(height: 90),
-                  _buildSearchBox(),
-                  SizedBox(height: 20),
-                  _buildEmailList(),
-                ],
-              ),
-            ),
-          ),
-          if (_isLoading)
-            Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.background),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.90,
-        height: MediaQuery.of(context).size.height * 0.08,
+      body: Container(
         decoration: BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2),
-          ],
-        ),
-        child: Row(
-          children: [
-            Image.asset('images/layla.png', width: 150, height: 150),
-            Expanded(
-              child: Center(
-                child: Text(
-                  "Search mails",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            RawMaterialButton(
-              onPressed: () => Navigator.pop(context),
-              shape: CircleBorder(),
-              fillColor: Colors.white,
-              padding: EdgeInsets.all(10),
-              child:
-                  Icon(Icons.home_filled, color: AppColors.background, size: 75),
-            ),
-            SizedBox(width: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearchBox() {
-    return Container(
-      width: 985,
-      height: 120,
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2),
-        ],
-      ),
-      child: Center(
-        child: Row(
-          children: [
-            SizedBox(width: 10),
-            Container(
-              width: 850,
-              height: 90,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.black26, width: 1),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: "Enter a few key words...",
-                    border: InputBorder.none,
-                  ),
-                  style: TextStyle(fontSize: 32),
-                ),
-              ),
-            ),
-            SizedBox(width: 20),
-            ElevatedButton(
-              onPressed: _searchEmails,
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              ),
-              child: Icon(Icons.send, size: 50, color: AppColors.background),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmailList() {
-    return Container(
-      width: 985,
-      height: 1400,
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(10),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white, 
-            borderRadius: BorderRadius.circular(10),
+          image: DecorationImage(
+            image: AssetImage("images/bg.png"),
+            fit: BoxFit.cover,
           ),
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: _emails.length,
-            itemBuilder: (context, index) {
-              var message = _emails[index];
-
-              String subject = "No Subject";
-              String from = "Unknown Sender";
-
-              if (message.payload != null && message.payload!.headers != null) {
-                for (var header in message.payload!.headers!) {
-                  if (header.name == "Subject") {
-                    subject = header.value!;
-                  }
-                  if (header.name == "From") {
-                    from = header.value!;
-                  }
-                }
-              }
-
-              return Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                      'Subject: $subject',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Sender: $from',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    onTap: () {
-                      _getEmailContent(message.id!);
-                    },
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              AppBar(
+                backgroundColor: Colors.white24,
+                elevation: 4,
+                title: Text("Search Mails", style: TextStyle(color: Colors.black)),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.black26, width: 1),
                   ),
-                  Divider(),
-                ],
-              );
-            },
+                  child: Row(
+                    children: [
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: "Enter a few key words...",
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.search, color: Colors.black),
+                        onPressed: _searchEmails,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.95,
+                height: MediaQuery.of(context).size.height * 0.8,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black26, width: 1),
+                ),
+                child: _isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : _emails.isEmpty
+                      ? Center(child: Text("No emails found"))
+                      : ListView.separated(
+                          itemCount: _emails.length,
+                          separatorBuilder: (context, index) => Divider(color: Colors.black26, thickness: 0.5),
+                          itemBuilder: (context, index) {
+                            var message = _emails[index];
+                            String subject = "No Subject";
+                            String from = "Unknown Sender";
+
+                            message.payload?.headers?.forEach((header) {
+                              if (header.name == "Subject") subject = header.value!;
+                              if (header.name == "From") from = header.value!;
+                            });
+
+                            return ListTile(
+                              title: Text(subject, style: TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: Text(from),
+                            );
+                          },
+                        ),
+
+              ),
+            ],
           ),
         ),
       ),

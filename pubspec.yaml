@@ -43,6 +43,8 @@ dependencies:
   googleapis_auth: ^1.6.0
   flutter_dotenv: ^5.2.1
   google_generative_ai: ^0.4.6
+  firebase_remote_config: ^5.4.1
+  animated_text_kit: ^4.2.3
 
 dev_dependencies:
   flutter_test:
@@ -66,8 +68,8 @@ flutter:
   assets:
     - "images/layla.png"
     - "images/gmail.png"
-    - "lib/consts/key.env"
     - "images/cls.png"
+    - "images/bg.png"
 
 
   # The following line ensures that the Material Icons font is

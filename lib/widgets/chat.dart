@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:layla/theme/colors.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 class Chat extends StatefulWidget {
   const Chat({super.key});
@@ -11,6 +11,7 @@ class Chat extends StatefulWidget {
 }
 
 class _ChatState extends State<Chat> {
+  
   final ChatBot chatBot = ChatBot();
   final TextEditingController _controller = TextEditingController();
   List<Message> messages = [];  
@@ -265,15 +266,29 @@ class ChatBot {
   ChatBot();
 
   Future<void> initialize() async {
-    await dotenv.load(fileName: "lib/consts/key.env");
-    String apiKey = dotenv.env['GEMINI_API_KEY'] ?? "api key not found";
-    model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
+    try {
+      final remoteConfig = FirebaseRemoteConfig.instance;
+      await remoteConfig.fetchAndActivate();
+      String apiKey = remoteConfig.getString('gem_api_key');
+      if (apiKey.isNotEmpty) {
+        model = GenerativeModel(model: 'gemini-2.0-flash', apiKey: apiKey);
+      } else {
+        throw Exception("API Key not found in RemoteConfig");
+      }
+    } catch (e) {
+      print("Error fetching API Key: $e");
+    }
   }
 
   Future<String> sendMessage(String userMessage) async {
-    if (userMessage.isEmpty) return "Lutfen bir mesaj yazin.";
+    if (userMessage.isEmpty) return "Type.";
 
-    final response = await model.generateContent([Content.text(userMessage)]);
-    return response.text ?? "Yanit alinamadi.";
+    try {
+      final response = await model.generateContent([Content.text(userMessage)]);
+      return response.text ?? "no feedback.";
+    } catch (e) {
+      print("Error sending message: $e");
+      return "An error occured. Try later...";
+    }
   }
 }

@@ -3,7 +3,9 @@ import 'package:layla/theme/colors.dart';
 import 'package:layla/widgets/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:googleapis/gmail/v1.dart';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'dart:async';
 
 class Classify extends StatefulWidget {
   const Classify({super.key});
@@ -58,6 +60,99 @@ class _ClassifyState extends State<Classify> {
       );
     }
   }
+
+  Future<void> _assignLabelsToEmails() async {
+  if (_gmailApi == null) {
+    await _initGmailApi();
+  }
+
+  List<String> mailSubjects = [];
+  Map<String, String> mailIdMap = {};
+
+  await runZonedGuarded(() async {
+    try {
+      var messagesResponse = await _gmailApi!.users.messages.list("me");
+
+      if (messagesResponse.messages == null) {
+        throw Exception("No messages found.");
+      }
+
+      for (var message in messagesResponse.messages!) {
+        var messageDetails = await _gmailApi!.users.messages.get("me", message.id!);
+
+        var headers = messageDetails.payload?.headers;
+        var subjectHeader = headers?.firstWhere(
+          (header) => header.name == "Subject",
+          orElse: () => MessagePartHeader(name: "Subject", value: "No Subject"),
+        );
+
+        String mailTitle = subjectHeader!.value!;
+        mailSubjects.add(mailTitle);
+        mailIdMap[mailTitle] = message.id!;
+      }
+
+      Map<String, dynamic> requestBody = {"text_list": mailSubjects};
+
+      var response = await http
+          .post(
+            Uri.parse("http://192.168.56.1/classify"),
+            headers: {"Content-Type": "application/json"},
+            body: json.encode(requestBody),
+          )
+          .timeout(Duration(minutes: 30));
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        List<dynamic> classifiedEmails = responseData["results"];
+
+        var labelsResponse = await _gmailApi!.users.labels.list("me");
+        var existingLabels = labelsResponse.labels ?? [];
+
+        Map<String, String> labelIdMap = {
+          for (var label in existingLabels) label.name!: label.id!
+        };
+
+        for (var email in classifiedEmails) {
+          String mailTitle = email["mail_title"];
+          String category = email["category"];
+
+          if (labelIdMap.containsKey(category)) {
+            String? messageId = mailIdMap[mailTitle];
+            if (messageId != null) {
+              await _gmailApi!.users.messages.modify(
+                "me" as ModifyMessageRequest,
+                messageId,
+                ModifyMessageRequest(addLabelIds: [labelIdMap[category]!]) as String,
+              );
+            }
+          }
+        }
+
+        print("Mails categorized successfully!");
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Mails categorized successfully!")),
+          );
+        }
+      } else {
+        print("Failed to send data: ${response.statusCode}");
+      }
+    } catch (e, stackTrace) {
+      print("Error: $e");
+      print("StackTrace: $stackTrace");
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error categorizing emails: $e")),
+        );
+      }
+    }
+  }, (error, stackTrace) {
+    print("Uncaught error: $error");
+    print("StackTrace: $stackTrace");
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +294,7 @@ class _ClassifyState extends State<Classify> {
                       const SizedBox(height: 50),
                       ElevatedButton(
                         onPressed: () {
-                          
+                          _assignLabelsToEmails();
                         },
                         style: ButtonStyle(
                           padding: WidgetStatePropertyAll(

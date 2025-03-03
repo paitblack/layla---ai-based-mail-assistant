@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:layla/theme/colors.dart';
 import 'home_page.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -44,118 +44,81 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.95,
-          height: MediaQuery.of(context).size.height * 0.95,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10,
-                spreadRadius: 2,
-              ),
-            ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("images/bg.png"),
+            fit: BoxFit.cover,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              
-              Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(99),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ],
+        ),
+        child: Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: MediaQuery.of(context).size.height * 0.6,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20), 
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2), 
+                  offset: Offset(0, 4), 
+                  blurRadius: 10, 
                 ),
-                child: Center(
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  height: MediaQuery.of(context).size.height * 0.15,
                   child: Image.asset(
-                    'images/layla.png',
-                    width: 300,
-                    height: 300,
+                    "images/layla.png",
+                    fit: BoxFit.fill,
                   ),
                 ),
-              ),
-              Container(
-                width: 880,
-                height: 300,
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(99),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Container(
-                    width: 850,
-                    height: 270,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(99),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
+                Container(
+                  alignment: Alignment.center,
+                  width: MediaQuery.of(context).size.width * 0.80,
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      TyperAnimatedText(
                         "Hi! My name is Layla. I can't wait to be your mail assistant. Let's log in and get started.",
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 36,
-                          color: AppColors.background,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      )
+                    ],
+                    totalRepeatCount: 1,
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _signInWithGoogle(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        "images/gmail.png",
+                        height: MediaQuery.of(context).size.width * 0.05,
+                        width: MediaQuery.of(context).size.width * 0.05,
                       ),
-                    ),
+                      SizedBox(width: 8),
+                      Text(
+                        "Log in via Google",
+                        selectionColor: Colors.black,
+                      ),
+                    ],
                   ),
                 ),
-              ),
-             
-              Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(99),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: RawMaterialButton(
-                    onPressed: () => _signInWithGoogle(context),
-                    child: Image.asset(
-                      'images/gmail.png',
-                      height: 200,
-                      width: 200,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
