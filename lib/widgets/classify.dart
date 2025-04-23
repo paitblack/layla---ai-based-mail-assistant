@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:layla/widgets/home_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:googleapis/gmail/v1.dart';
-import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:layla/widgets/home_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class Classify extends StatefulWidget {
   const Classify({super.key});
@@ -14,9 +16,17 @@ class Classify extends StatefulWidget {
 class _ClassifyState extends State<Classify> {
   GmailApi? _gmailApi;
 
+  final List<String> labels = ["Advertisement", "News", "Work", "Family & Friends", "Others"];
+
   Future<void> _initGmailApi() async {
     _gmailApi = await HomePage(signedIN: FirebaseAuth.instance.currentUser)
         .gmailAPIaccess(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initGmailApi();
   }
 
   Future<void> _createLabels() async {
@@ -24,12 +34,7 @@ class _ClassifyState extends State<Classify> {
       await _initGmailApi();
     }
 
-    final labelsToCreate = [
-      "Work",
-      "Advertisement",
-      "News",
-      "Others"
-    ];
+    final labelsToCreate = ["Work", "Advertisement", "News","Family & Friends", "Others"];
 
     try {
       var existingLabels = await _gmailApi!.users.labels.list("me");
@@ -46,16 +51,161 @@ class _ClassifyState extends State<Classify> {
           await _gmailApi!.users.labels.create(newLabel, "me");
         }
       }
-
+      
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Labels created successfully!")),
+        SnackBar(content: Text('Labels created successfully'))
       );
     } catch (e) {
+      print("Failed to create labels: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to create labels: $e")),
+        SnackBar(content: Text('Failed to create labels: ${e.toString().substring(0, 100)}'))
       );
     }
   }
+
+  // E-posta baþlýklarýný ve ID'lerini alýp API'ye göndermek
+  Future<void> _classifyEmails() async {
+  if (_gmailApi == null) {
+    await _initGmailApi();
+  }
+
+  try {
+    // Get all emails from Gmail API
+    var messages = await _gmailApi!.users.messages.list("me");
+
+    Map<String, String> emailData = {};
+    Map<String, String> subjectToIdMap = {};
+    
+    // Set up email headers and IDs
+    for (var message in messages.messages!) {
+      var msg = await _gmailApi!.users.messages.get("me", message.id!);
+      
+      var subjectHeader = msg.payload?.headers?.firstWhere(
+        (header) => header.name == 'Subject', 
+        orElse: () => MessagePartHeader()..value = 'No Subject'
+      );
+      String subject = subjectHeader?.value ?? 'No Subject';
+      
+      emailData[subject] = message.id!;
+      subjectToIdMap[subject] = message.id!;
+    }
+
+    // Send to API
+    final response = await _sendEmailToApi(emailData);
+
+    // Process API response
+    if (response != null) {
+      print("API response: ${response.toString()}");
+
+      // Get the results array from the response
+      List<dynamic> results = response['results'];
+      
+      // Process each result
+      for (var item in results) {
+        String subject = item['mail_title'] ?? 'No Subject';
+        String label = item['category'] ?? 'Others';
+        String messageId = subjectToIdMap[subject] ?? '';
+        
+        // Apply label to the email
+        if (messageId.isNotEmpty) {
+          await _addLabelToEmail(messageId, label);
+        }
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('E-postalar baþarýyla sýnýflandýrýldý.'))
+      );
+    }
+  } catch (e) {
+    print("Hata oluþtu: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('E-posta sýnýflandýrma baþarýsýz oldu.'))
+    );
+  }
+}
+
+
+  // API'ye e-posta verilerini gönderme fonksiyonu
+  Future<Map<String, dynamic>?> _sendEmailToApi(Map<String, String> emailData) async {
+  const String apiUrl = "http://10.0.2.2:8000/classify";
+
+  final response = await http.post(
+    Uri.parse(apiUrl),
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({'text_list': emailData}),
+  );
+
+  if (response.statusCode == 200) {
+    var responseBody = utf8.decode(response.bodyBytes);
+    return json.decode(responseBody);
+  } else {
+    print('API request failed: ${response.statusCode}');
+    return null;
+  }
+}
+
+  // Tahmin edilen etiketlere göre e-postalarý etiketleme fonksiyonu
+  Future<void> _applyLabelsToEmails(Map<String, dynamic> predictedLabels) async {
+  try {
+    // Get messages to find the IDs
+    var messages = await _gmailApi!.users.messages.list("me");
+    Map<String, String> subjectToIdMap = {};
+    
+    // First, build a map of subject to message ID
+    for (var message in messages.messages!) {
+      var msg = await _gmailApi!.users.messages.get("me", message.id!);
+      
+      var subjectHeader = msg.payload?.headers?.firstWhere(
+        (header) => header.name == 'Subject', 
+        orElse: () => MessagePartHeader()..value = 'No Subject'
+      );
+      String subject = subjectHeader?.value ?? 'No Subject';
+      
+      subjectToIdMap[subject] = message.id!;
+    }
+    
+    // Now apply labels using the map
+    for (var entry in predictedLabels.entries) {
+      String subject = entry.key;
+      String label = entry.value;
+      
+      if (subjectToIdMap.containsKey(subject)) {
+        String messageId = subjectToIdMap[subject]!;
+        await _addLabelToEmail(messageId, label);
+      }
+    }
+  } catch (e) {
+    print("Hata oluþtu: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('E-posta etiketleme baþarýsýz oldu.'))
+    );
+  }
+}
+
+  // E-posta ID'sine etiket ekleme fonksiyonu
+  Future<void> _addLabelToEmail(String messageId, String label) async {
+  try {
+    var labelsList = await _gmailApi!.users.labels.list("me");
+    var labelItem = labelsList.labels?.firstWhere((labelItem) => labelItem.name == label);
+    
+    if (labelItem != null) {
+      var labelId = labelItem.id;
+      
+      if (labelId != null) {
+        // Etiketi e-postaya ekliyoruz
+        await _gmailApi!.users.messages.modify(
+          ModifyMessageRequest()..addLabelIds = [labelId],
+          "me", messageId
+        );
+      }
+    } else {
+      print("Label not found: $label");
+    }
+  } catch (e) {
+    print("Etiket ekleme hatasý: $e");
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +262,9 @@ class _ClassifyState extends State<Classify> {
             Column(
               children: [
                 ElevatedButton(
-                        onPressed: _createLabels,
+                        onPressed: () {
+                                _createLabels();
+                              },
                         style: ButtonStyle(
                           padding: WidgetStatePropertyAll(
                               EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.01, horizontal: MediaQuery.of(context).size.width * 0.15)),
@@ -130,9 +282,11 @@ class _ClassifyState extends State<Classify> {
                           ),
                         ),
                       ),
-                SizedBox(width: MediaQuery.of(context).size.height * 0.02,),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.02,),
                 ElevatedButton(
-                        onPressed: (){},
+                        onPressed: () async {
+                          _classifyEmails();
+                        },
                         style: ButtonStyle(
                           padding: WidgetStatePropertyAll(
                               EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.01, horizontal: MediaQuery.of(context).size.width * 0.15)),

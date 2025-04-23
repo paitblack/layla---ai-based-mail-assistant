@@ -45,6 +45,8 @@ dependencies:
   google_generative_ai: ^0.4.6
   firebase_remote_config: ^5.4.1
   animated_text_kit: ^4.2.3
+  tflite_flutter: ^0.11.0
+  firebase_ml_model_downloader: ^0.3.3+2
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +72,9 @@ flutter:
     - "images/gmail.png"
     - "images/cls.png"
     - "images/bg.png"
+    - "assets/model.tflite"
+    - "assets/doksanyedi-ondokuz.tflite"
+    - "assets/converted_model.tflite"
 
 
   # The following line ensures that the Material Icons font is

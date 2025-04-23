@@ -1,7 +1,25 @@
+buildscript {
+    ext {
+        gradle_version = '8.9'  // Make sure to use the latest Gradle version
+    }
+
+    repositories {
+        google()  // Add Google's repository
+        mavenCentral()  // Add Maven Central
+        mavenLocal()
+    }
+
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.9.0'  // AGP version
+    }
+}
+
 allprojects {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
     }
 }
 
