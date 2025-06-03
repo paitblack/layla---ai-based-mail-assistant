@@ -116,39 +116,39 @@ class _SearchMailState extends State<SearchMail> {
                   ),
                 ),
               ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: MediaQuery.of(context).size.height * 0.8,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black26, width: 1),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.005),
+              Expanded(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.black26, width: 1),
+                  ),
+                  child: _isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : _emails.isEmpty
+                          ? Center(child: Text("No emails found"))
+                          : ListView.separated(
+                              itemCount: _emails.length,
+                              separatorBuilder: (context, index) => Divider(color: Colors.black26, thickness: 0.5),
+                              itemBuilder: (context, index) {
+                                var message = _emails[index];
+                                String subject = "No Subject";
+                                String from = "Unknown Sender";
+
+                                message.payload?.headers?.forEach((header) {
+                                  if (header.name == "Subject") subject = header.value!;
+                                  if (header.name == "From") from = header.value!;
+                                });
+
+                                return ListTile(
+                                  title: Text(subject, style: TextStyle(fontWeight: FontWeight.bold)),
+                                  subtitle: Text(from),
+                                );
+                              },
+                            ),
                 ),
-                child: _isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : _emails.isEmpty
-                      ? Center(child: Text("No emails found"))
-                      : ListView.separated(
-                          itemCount: _emails.length,
-                          separatorBuilder: (context, index) => Divider(color: Colors.black26, thickness: 0.5),
-                          itemBuilder: (context, index) {
-                            var message = _emails[index];
-                            String subject = "No Subject";
-                            String from = "Unknown Sender";
-
-                            message.payload?.headers?.forEach((header) {
-                              if (header.name == "Subject") subject = header.value!;
-                              if (header.name == "From") from = header.value!;
-                            });
-
-                            return ListTile(
-                              title: Text(subject, style: TextStyle(fontWeight: FontWeight.bold)),
-                              subtitle: Text(from),
-                            );
-                          },
-                        ),
-
               ),
             ],
           ),

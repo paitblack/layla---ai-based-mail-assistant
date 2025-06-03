@@ -20,7 +20,7 @@ class Alarm extends StatelessWidget {
                 backgroundColor: Colors.white24,
                 elevation: 4,
                 title: Text(
-                  "Set an alarm",
+                  "OCR Mailer",
                   style: TextStyle(color: Colors.black),
                 ),
               ),

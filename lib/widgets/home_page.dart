@@ -4,7 +4,7 @@ import 'package:layla/widgets/settings.dart';
 import 'package:layla/widgets/search_mail.dart';
 import 'package:layla/widgets/chat.dart';
 import 'package:layla/widgets/classify.dart';
-import 'package:layla/widgets/alarm.dart';
+import 'package:layla/widgets/ocr.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:layla/widgets/login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -249,7 +249,7 @@ static const IconData notifications = IconData(0xe44f, fontFamily: 'MaterialIcon
                             minimumSize: WidgetStatePropertyAll(Size(MediaQuery.of(context).size.width * 0.35,MediaQuery.of(context).size.height * 0.175),),
                           ),
                           child: Text(
-                            'Search \n mails', 
+                            'Search mails', 
                             style: TextStyle(
                             color: AppColors.redy,
                             fontSize: MediaQuery.of(context).size.width * 0.04,
@@ -268,7 +268,7 @@ static const IconData notifications = IconData(0xe44f, fontFamily: 'MaterialIcon
                             minimumSize: WidgetStatePropertyAll(Size(MediaQuery.of(context).size.width * 0.35,MediaQuery.of(context).size.height * 0.175),),
                           ),
                           child: Text(
-                            'Chat with \n   Layla', 
+                            'Chat with Layla', 
                             style: TextStyle(
                             color: AppColors.greeny,
                             fontSize: MediaQuery.of(context).size.width * 0.04,
@@ -312,7 +312,7 @@ static const IconData notifications = IconData(0xe44f, fontFamily: 'MaterialIcon
                             minimumSize: WidgetStatePropertyAll(Size(MediaQuery.of(context).size.width * 0.35,MediaQuery.of(context).size.height * 0.175),),
                           ),
                           child: Text(
-                            'Set an alarm', 
+                            'OCR Mailer', 
                             style: TextStyle(
                             color: AppColors.bluey,
                             fontSize: MediaQuery.of(context).size.width * 0.04,

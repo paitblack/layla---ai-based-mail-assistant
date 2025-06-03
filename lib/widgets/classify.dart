@@ -63,20 +63,17 @@ class _ClassifyState extends State<Classify> {
     }
   }
 
-  // E-posta baþlýklarýný ve ID'lerini alýp API'ye göndermek
   Future<void> _classifyEmails() async {
   if (_gmailApi == null) {
     await _initGmailApi();
   }
 
   try {
-    // Get all emails from Gmail API
     var messages = await _gmailApi!.users.messages.list("me");
 
     Map<String, String> emailData = {};
     Map<String, String> subjectToIdMap = {};
     
-    // Set up email headers and IDs
     for (var message in messages.messages!) {
       var msg = await _gmailApi!.users.messages.get("me", message.id!);
       
@@ -90,23 +87,18 @@ class _ClassifyState extends State<Classify> {
       subjectToIdMap[subject] = message.id!;
     }
 
-    // Send to API
     final response = await _sendEmailToApi(emailData);
 
-    // Process API response
     if (response != null) {
       print("API response: ${response.toString()}");
 
-      // Get the results array from the response
       List<dynamic> results = response['results'];
       
-      // Process each result
       for (var item in results) {
         String subject = item['mail_title'] ?? 'No Subject';
         String label = item['category'] ?? 'Others';
         String messageId = subjectToIdMap[subject] ?? '';
         
-        // Apply label to the email
         if (messageId.isNotEmpty) {
           await _addLabelToEmail(messageId, label);
         }
@@ -124,8 +116,6 @@ class _ClassifyState extends State<Classify> {
   }
 }
 
-
-  // API'ye e-posta verilerini gönderme fonksiyonu
   Future<Map<String, dynamic>?> _sendEmailToApi(Map<String, String> emailData) async {
   const String apiUrl = "http://10.0.2.2:8000/classify";
 
@@ -144,14 +134,12 @@ class _ClassifyState extends State<Classify> {
   }
 }
 
-  // Tahmin edilen etiketlere göre e-postalarý etiketleme fonksiyonu
+  // ignore: unused_element
   Future<void> _applyLabelsToEmails(Map<String, dynamic> predictedLabels) async {
   try {
-    // Get messages to find the IDs
     var messages = await _gmailApi!.users.messages.list("me");
     Map<String, String> subjectToIdMap = {};
     
-    // First, build a map of subject to message ID
     for (var message in messages.messages!) {
       var msg = await _gmailApi!.users.messages.get("me", message.id!);
       
@@ -164,7 +152,6 @@ class _ClassifyState extends State<Classify> {
       subjectToIdMap[subject] = message.id!;
     }
     
-    // Now apply labels using the map
     for (var entry in predictedLabels.entries) {
       String subject = entry.key;
       String label = entry.value;
@@ -182,7 +169,6 @@ class _ClassifyState extends State<Classify> {
   }
 }
 
-  // E-posta ID'sine etiket ekleme fonksiyonu
   Future<void> _addLabelToEmail(String messageId, String label) async {
   try {
     var labelsList = await _gmailApi!.users.labels.list("me");
@@ -192,7 +178,6 @@ class _ClassifyState extends State<Classify> {
       var labelId = labelItem.id;
       
       if (labelId != null) {
-        // Etiketi e-postaya ekliyoruz
         await _gmailApi!.users.messages.modify(
           ModifyMessageRequest()..addLabelIds = [labelId],
           "me", messageId
