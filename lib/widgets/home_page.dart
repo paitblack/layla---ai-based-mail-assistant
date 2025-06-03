@@ -15,9 +15,12 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: [
   'https://www.googleapis.com/auth/gmail.readonly',
     'https://www.googleapis.com/auth/gmail.modify', 
     'https://www.googleapis.com/auth/gmail.labels', 
-    'https://www.googleapis.com/auth/gmail.compose'
+    'https://www.googleapis.com/auth/gmail.compose',
+    'https://www.googleapis.com/auth/gmail.send',
+    'https://www.googleapis.com/auth/gmail.compose',
     'https://www.googleapis.com/auth/gmail.send',
 ]);
+
 final mail = FirebaseAuth.instance.currentUser?.email;
 final bool isSignedIn = FirebaseAuth.instance.currentUser != null;
 
