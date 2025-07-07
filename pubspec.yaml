@@ -76,9 +76,6 @@ flutter:
     - "images/gmail.png"
     - "images/cls.png"
     - "images/bg.png"
-    - "assets/model.tflite"
-    - "assets/doksanyedi-ondokuz.tflite"
-    - "assets/converted_model.tflite"
 
 
   # The following line ensures that the Material Icons font is

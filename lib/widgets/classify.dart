@@ -16,7 +16,7 @@ class Classify extends StatefulWidget {
 class _ClassifyState extends State<Classify> {
   GmailApi? _gmailApi;
 
-  final List<String> labels = ["Advertisement", "News", "Work", "Family & Friends", "Others"];
+  final List<String> labels = ["Work and Business","Friends and Family","News and Promotions","Orders and Bills","Application Notifications"];
 
   Future<void> _initGmailApi() async {
     _gmailApi = await HomePage(signedIN: FirebaseAuth.instance.currentUser)
@@ -34,7 +34,7 @@ class _ClassifyState extends State<Classify> {
       await _initGmailApi();
     }
 
-    final labelsToCreate = ["Work", "Advertisement", "News","Family & Friends", "Others"];
+    final labelsToCreate = ["Work and Business","Friends and Family","News and Promotions","Orders and Bills","Application Notifications"];
 
     try {
       var existingLabels = await _gmailApi!.users.labels.list("me");
@@ -72,7 +72,7 @@ class _ClassifyState extends State<Classify> {
     var messages = await _gmailApi!.users.messages.list("me");
 
     Map<String, String> emailData = {};
-    Map<String, String> subjectToIdMap = {};
+    Map<String, String> formattedTextToIdMap = {};
     
     for (var message in messages.messages!) {
       var msg = await _gmailApi!.users.messages.get("me", message.id!);
@@ -83,8 +83,35 @@ class _ClassifyState extends State<Classify> {
       );
       String subject = subjectHeader?.value ?? 'No Subject';
       
-      emailData[subject] = message.id!;
-      subjectToIdMap[subject] = message.id!;
+      var fromHeader = msg.payload?.headers?.firstWhere(
+        (header) => header.name == 'From', 
+        orElse: () => MessagePartHeader()..value = 'Unknown Sender'
+      );
+      String fromValue = fromHeader?.value ?? 'Unknown Sender';
+      
+      String senderName = '';
+      String senderEmail = '';
+      
+      if (fromValue.contains('<') && fromValue.contains('>')) {
+        var parts = fromValue.split('<');
+        senderName = parts[0].trim();
+        senderEmail = parts[1].replaceAll('>', '').trim();
+      } else if (fromValue.contains('@')) {
+        senderEmail = fromValue.trim();
+        senderName = senderEmail.split('@')[0]; 
+      } else {
+        senderName = fromValue.trim();
+        senderEmail = fromValue.trim();
+      }
+      
+      if (senderName.startsWith('"') && senderName.endsWith('"')) {
+        senderName = senderName.substring(1, senderName.length - 1);
+      }
+      
+      String formattedText = '$senderName $senderEmail Subject: $subject';
+      
+      emailData[formattedText] = message.id!;
+      formattedTextToIdMap[formattedText] = message.id!;
     }
 
     final response = await _sendEmailToApi(emailData);
@@ -95,9 +122,9 @@ class _ClassifyState extends State<Classify> {
       List<dynamic> results = response['results'];
       
       for (var item in results) {
-        String subject = item['mail_title'] ?? 'No Subject';
+        String formattedText = item['mail_title'] ?? '';
         String label = item['category'] ?? 'Others';
-        String messageId = subjectToIdMap[subject] ?? '';
+        String messageId = formattedTextToIdMap[formattedText] ?? '';
         
         if (messageId.isNotEmpty) {
           await _addLabelToEmail(messageId, label);
@@ -105,19 +132,19 @@ class _ClassifyState extends State<Classify> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('E-postalar baþarýyla sýnýflandýrýldý.'))
+        SnackBar(content: Text('E-mails classified succesfuly.'))
       );
     }
   } catch (e) {
-    print("Hata oluþtu: $e");
+    print("Error occured: $e");
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('E-posta sýnýflandýrma baþarýsýz oldu.'))
+      SnackBar(content: Text('E-mails could not classified.'))
     );
   }
 }
 
   Future<Map<String, dynamic>?> _sendEmailToApi(Map<String, String> emailData) async {
-  const String apiUrl = "http://10.0.2.2:8000/classify";
+  const String apiUrl = "http://192.168.1.17:8000/classify";
 
   final response = await http.post(
     Uri.parse(apiUrl),
@@ -162,9 +189,9 @@ class _ClassifyState extends State<Classify> {
       }
     }
   } catch (e) {
-    print("Hata oluþtu: $e");
+    print("Error: $e");
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('E-posta etiketleme baþarýsýz oldu.'))
+      SnackBar(content: Text('failed..'))
     );
   }
 }
@@ -187,7 +214,7 @@ class _ClassifyState extends State<Classify> {
       print("Label not found: $label");
     }
   } catch (e) {
-    print("Etiket ekleme hatasý: $e");
+    print("Label adding error: $e");
   }
 }
 
@@ -234,7 +261,7 @@ class _ClassifyState extends State<Classify> {
                   ),
                   SizedBox(width: MediaQuery.of(context).size.width * 0.03,),
                   Text(
-                    'On this page, you can classify your emails using our model trained with \n95% accuracy.\n\nOur classes are labeled as Advertisement, Work, News and Others.\n\nFirst, create your labels by clicking the "Set Labels" button.\n\nThen, you can label all your emails by clicking the "Classify All" button.\n\nThis will provide you with an organized email environment.',
+                    'On this page, you can classify your emails.\n\nOur classes are labeled as "Work and Business","Friends and Family","News and Promotions","Orders and Bills","Application Notifications".\n\nFirst, create your labels by clicking the "Set Labels" button.\n\nThen, you can label all your emails by clicking the "Classify All" button.\n\nThis will provide you with an organized email environment.',
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: MediaQuery.of(context).size.width * 0.024
